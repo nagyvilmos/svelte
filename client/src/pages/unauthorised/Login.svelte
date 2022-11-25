@@ -45,7 +45,9 @@
         required
       />
     </p>
-    <p><button class="positive" disabled={!valid} type="submit">Login</button></p>
+    <p>
+      <button class="positive" disabled={!valid} type="submit">Login</button>
+    </p>
   </form>
   <p><a href="/forgotton">I have forgotton my password</a></p>
 </div>
@@ -57,8 +59,10 @@
   .login {
     border: 2px solid;
     border-radius: 8px;
-    margin-left: 35vw;
-    margin-right: 35vw;
+    margin-left: auto;
+    margin-right: auto;
+    width: 30vw;
+    min-width: 360px;
     padding: 4px;
   }
   input {

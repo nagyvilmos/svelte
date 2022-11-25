@@ -5,12 +5,12 @@ const availableThemes = Object.keys(themes);
 const defaultTheme = availableThemes[0];
 
 const onLoad = (settings) => {
-	const {theme} = settings;
+	const {theme} = (settings ?? {});
 	return {
 		...settings,
 		theme: {
 			names: availableThemes,
-			current: availableThemes.includes(theme.current) ? theme.current : defaultTheme,
+			current: availableThemes.includes(theme?.current) ? theme.current : defaultTheme,
 			available:themes
 		}
 	}
@@ -29,7 +29,7 @@ const createSettings = () => {
 					return values
 				}
 				let pos = names.indexOf(values.theme.current);
-				let name = pos < names.length-1
+				let name = pos >=0 && pos < names.length-1
 					? names[pos+1]
 					: names[0];
 

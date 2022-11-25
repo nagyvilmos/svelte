@@ -34,6 +34,11 @@
     color: var(--theme-color);
     border-color: var(--theme-color);
   }
+  :global(.reverse) {
+    background-color: var(--theme-color);
+    color: var(--theme-background);
+    border-color: var(--theme-background);
+  }
   :global(.primary) {
     background-color: var(--theme-primary);
     color: var(--theme-primary-text);
