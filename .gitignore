@@ -1,2 +1,3 @@
 ﻿__pycache__/json_store.cpython-38.pyc
 *.pyc
+client/package-lock.json

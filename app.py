@@ -17,16 +17,23 @@ model = get_model()
 log.info("...build app")
 app = Flask(__name__)
 
-# Path for all the static files (compiled JS/CSS, etc.)
+"""
+Main routes path.
+All routing is client side, and so we just serve up the app.
+"""
 @app.route("/")
 @app.route("/<path:path>")
 def home(path = None):
     return send_from_directory('client/public', 'index.html')
 
+"""
+Path for all the static files (compiled JS/CSS, etc.)
+"""
 @app.route("/resource/<path:path>")
 def content(path):
     return send_from_directory('client/public', path)
 
+#everything for the api is in here:
 init_api(app)
         
 if __name__ == "__main__":

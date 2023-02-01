@@ -25,10 +25,26 @@ for f in Path(__file__).parent.glob("*.py"):
 del import_module, Path
 
 from ._test import test_funcs
-def run_tests():
+def run_tests(verbose, test_name):
     results = []
+    total = {
+        "tests":0,
+        "passed":0,
+        "finished":0,
+        "clean":0,
+        "elapsed": 0,
+    }
     for test in test_funcs:
-        r = test()
-        print(r['test'], r['passed'])
+        r=test(test_name)
+        if r is None:
+            continue
+        if verbose:
+            print(r['test'],'-', 'passed' if r['passed'] else 'FAILED')
         results.append(r)
-    return results
+        total["tests"]+=1
+        for metric in ["passed","finished","clean"]:
+            if r[metric]:
+                total[metric]+=1
+        total["elapsed"]+=r["elapsed"]
+    total["results"]=results
+    return total

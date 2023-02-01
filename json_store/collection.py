@@ -19,7 +19,6 @@ class Collection:
 
         return None
 
-
     def _insert_into_collection(self, records):
         col = self.store._data[self.name]
         ids = []

@@ -17,8 +17,8 @@ class Data:
                 if filter(x):
                     found = True
                     yield x
-            #if not found:
-            #    yield from ()
+            if not found:
+                yield from ()
         return Data(filtered_data)
     
     def map(self, map):
@@ -35,5 +35,3 @@ class Data:
             for x in current_value:
                 yield map(x)
         return Data(reduced_data)
-        
-

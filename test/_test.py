@@ -9,11 +9,16 @@ test_funcs = []
 def test(description, scafold=None, cleanup=None):
     log.debug(f"wrap {description}")
     def test_decorator(test):
-        def wrapper():
+        def wrapper(test_name):
+            if test_name is not None and test_name != description:
+                return None
+                
             log.info('=====Test: ' + description)
             doc = {
-                'test': description,
-                'started': datetime.now()}
+                'test':description,
+                'passed':False,
+                'finished':False,
+                'started':datetime.now()}
             try:
                 context=scafold() if scafold is not None else None
                 try:
@@ -29,6 +34,7 @@ def test(description, scafold=None, cleanup=None):
                 doc['scafold_exception'] = str(ex)
                 doc['clean']=False
             doc['completed'] = datetime.now()
+            doc['elapsed'] = (doc['completed'] - doc['started']).total_seconds()
             return doc
 
         # add the wrapper to the list of migrations

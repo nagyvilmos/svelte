@@ -2,14 +2,18 @@ import json, uuid, os.path
 from .collection import Collection
 
 class Store:
-    def __init__(self, path, folder = False, save_action = None) -> None:
+    def __init__(self, path:str, folder:bool = False, save_action:bool = None) -> None:
         self.path = path
         self.folder = folder
         self.save_action = save_action if save_action is not None else folder
         self._data = None
         self._changed = []
 
-    def _load_data(self, path):
+    def close(self, commit: bool):
+        if commit:
+            self.commit()
+        
+    def _load_data(self, path:str):
         if (not os.path.isfile(path)):
             return None
 
@@ -117,14 +121,36 @@ class Store:
 
         self._changed = []
 
+"""See if a doc matches a filter
+match = {"field": {"compare", value}}
+      | {"$and": [match, ...]}
+      | {"$or": [match, ...]}
+      | {"$not": match}
+compare = "$eq"|"$ne"|"$lt"|"$gt"|"$le"|"$ge"|"$value"
 
+{"$value" : true} checks the key exists and has a value
+{"$value" : false} checks the key does not exist
+
+To check if a key is set with no value:
+{"$not": "$or": [{"field": {"$value" : false}}, {"field": {"$value" : true}}]}
+"""
 def is_match(doc, filter):
     if filter is None:
         return True
 
+    if callable(filter):#
+        return filter(doc)
+
     for key in filter.keys():
-        if key in ["$and", "$or", "$not"]:
-            return False
+        value = filter[key] 
+
+        compare = {
+            "$and": lambda v : not([is_match(doc, x) for x in v].any(False)),
+            "$or": lambda v  : [is_match(doc, x) for x in v].any(True),
+            "$not": lambda v : not is_match(doc, v)
+        }.get(key)
+        if compare is not None :
+            return compare(doc, value)
         if filter[key] != doc.get(key):
             return False
     
