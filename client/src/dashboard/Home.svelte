@@ -1,4 +1,5 @@
 <script>
+  import Dialog from "../component/dialog/Dialog.svelte";
   let current = undefined;
   let randoms = ["Lorum", "Ipsum", "Carpe", "Dium"];
   let views = randoms.map((r, i) => ({
@@ -49,6 +50,12 @@
       : "collapsed none";
 </script>
 
+<Dialog layout={{
+  body: [{type:"text", label: "Email", prompt: "Enter email"}
+  ,{type:"text", format:"password", label: "Password", password:"*"}],
+  buttons:[{name:"woop", label: "PRESS ME"}]
+}}/>
+
 <div on:click={() => selectView()}>
   {#each views.sort( (a, b) => (a.index === current ? 1 : b.index === current ? -1 : a.index - b.index) ) as view}
     <div
@@ -65,6 +72,7 @@
             on:click|stopPropagation={() =>
               selectModule(view.index, module.index)}
           >
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <h4
               class="content"
               on:click|stopPropagation={() =>

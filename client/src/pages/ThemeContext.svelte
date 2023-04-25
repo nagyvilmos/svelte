@@ -34,6 +34,11 @@
     color: var(--theme-color);
     border-color: var(--theme-color);
   }
+  :global(.base) {
+    background-color: var(--theme-background);
+    color: var(--theme-color);
+    border-color: var(--theme-color);
+  }
   :global(.reverse) {
     background-color: var(--theme-color);
     color: var(--theme-background);
@@ -45,8 +50,8 @@
     border-color: var(--theme-primary-text);
   }
   :global(.primary-reverse) {
-    background-color: var(--theme-primary-text);
-    color: var(--theme-primary);
+    background-color: var(--theme-background);
+    color: var(--theme-color);
     border-color: var(--theme-primary);
   }
   :global(.secondary) {
@@ -55,8 +60,8 @@
     border-color: var(--theme-secondary-text);
   }
   :global(.secondary-reverse) {
-    background-color: var(--theme-secondary-text);
-    color: var(--theme-secondary);
+    background-color: var(--theme-background);
+    color: var(--theme-color);
     border-color: var(--theme-secondary);
   }
   :global(.positive) {
@@ -65,8 +70,8 @@
     border-color: var(--theme-positive-text);
   }
   :global(.positive-reverse) {
-    background-color: var(--theme-positive-text);
-    color: var(--theme-positive);
+    background-color: var(--theme-background);
+    color: var(--theme-color);
     border-color: var(--theme-positive);
   }
   :global(.negative) {
@@ -75,8 +80,8 @@
     border-color: var(--theme-negative-text);
   }
   :global(.negative-reverse) {
-    background-color: var(--theme-negative-text);
-    color: var(--theme-negative);
+    background-color: var(--theme-background);
+    color: var(--theme-color);
     border-color: var(--theme-negative);
   }
   :global(.error) {
@@ -85,8 +90,8 @@
     border-color: var(--theme-error-text);
   }
   :global(.error-reverse) {
-    background-color: var(--theme-error-text);
-    color: var(--theme-error);
+    background-color: var(--theme-background);
+    color: var(--theme-color);
     border-color: var(--theme-error);
   }
   :global(.warning) {
@@ -95,8 +100,8 @@
     border-color: var(--theme-warning-text);
   }
   :global(.warning-reverse) {
-    background-color: var(--theme-warning-text);
-    color: var(--theme-warning);
+    background-color: var(--theme-background);
+    color: var(--theme-color);
     border-color: var(--theme-warning);
   }
   :global(.info) {
@@ -105,8 +110,8 @@
     border-color: var(--theme-info-text);
   }
   :global(.info-reverse) {
-    background-color: var(--theme-info-text);
-    color: var(--theme-info);
+    background-color: var(--theme-background);
+    color: var(--theme-color);
     border-color: var(--theme-info);
   }
 </style>
