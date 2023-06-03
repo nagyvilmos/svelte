@@ -65,7 +65,7 @@ def move(x=None, lX=-1, last=''):
 
 def reorder_table():
     for x in range(len(table)):
-          
+          print(table[x])
 
 if __name__ == "__main__":
     print(move())

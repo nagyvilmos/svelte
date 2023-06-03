@@ -33,7 +33,7 @@ Path for all the static files (compiled JS/CSS, etc.)
 def content(path):
     return send_from_directory('client/public', path)
 
-#everything for the api is in here:
+#Load in the controllers from the API:
 init_api(app)
         
 if __name__ == "__main__":

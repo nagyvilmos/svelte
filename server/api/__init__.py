@@ -2,6 +2,7 @@ from flask import Blueprint, abort, json
 import random
 
 from .auth import auth_init
+from .todo import todo_init
 
 api = Blueprint('api',__name__, url_prefix="/api")
 
@@ -18,4 +19,5 @@ def hello():
 
 def init_api(app):
     auth_init(api)
+    todo_init(api)
     app.register_blueprint(api)
