@@ -1,7 +1,7 @@
 from random import random
 from time import sleep
 from ._test import test
-# use this to module to test the testing framework
+# use this module to test the testing framework
 
 
 #@test('This must fail')

@@ -11,6 +11,7 @@
   const setPage = (newPage) => {
     page = newPage;
   };
+
   routeUnauthorised(router, setPage);
 
   // this means the /home route MUST return the control to render.
@@ -21,10 +22,14 @@
           ? routeFn()
           : "/home"
         : "/login";
-      if (typeof authedRoute === "string") {
+
+        console.log({authedRoute})
+
+        if (typeof authedRoute === "string") {
         router.redirect(authedRoute);
         return;
       }
+
       return authedRoute;
     });
   };
@@ -33,9 +38,7 @@
     console.debug("...redirect");
     if (!loggedIn) {
       router.redirect("/login");
-    } else {
-      router.redirect("/home");
-    }
+    } 
   });
 
   router.start();

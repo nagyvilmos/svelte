@@ -1,6 +1,10 @@
 import json, uuid, os.path
 from .collection import Collection
 
+class StoreException(Exception):
+    def __init__(self, massage: str = "Store exception", path:str = ""):
+        super(massage)
+
 class Store:
     def __init__(self, path:str, folder:bool = False, save_action:bool = None) -> None:
         self.path = path
@@ -8,13 +12,18 @@ class Store:
         self.save_action = save_action if save_action is not None else folder
         self._data = None
         self._changed = []
+        self.open = True
 
     def close(self, commit: bool):
         if commit:
             self.commit()
+        self._data = None
+        self.open = False
         
     def _load_data(self, path:str):
-        if (not os.path.isfile(path)):
+        if not self.open:
+            raise StoreException('Store is not open')
+        if (os.path.isfile(path)):
             return None
 
         with open(path, 'r') as f:
@@ -24,6 +33,8 @@ class Store:
         return d
 
     def _save_data(self, path, data):
+        if not self.open:
+            raise StoreException('Store is not open')
         with open(path, 'w') as f:
             f.write(json.dumps(data, default=str))
 
@@ -101,6 +112,8 @@ class Store:
             self.save()
 
     def commit(self, collection, save=None):
+        if not self.open:
+            raise StoreException('Store is not open')
         if collection not in self._changed:
             self._changed.append(collection)
         save_now = save if save is not None else self.folder
@@ -109,6 +122,8 @@ class Store:
 
     def save(self):
         '''Save any changes to the database'''
+        if not self.open:
+            raise StoreException('Store is not open')
         if len(self._changed) == 0:
             return
 
@@ -155,6 +170,3 @@ def is_match(doc, filter):
             return False
     
     return True
-
-
-

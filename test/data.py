@@ -1,6 +1,5 @@
 from ._test import test
 from json_store.data import Data
-import os
 
 def producer():
     def p():
