@@ -27,11 +27,8 @@ class Data:
                 yield map(x)
         return Data(mapped_data)
 
-    def reduce(self, reduce):
-        current_value = []
+    def reduce(self, reduce, initial_value = None):
+        current_value = initial_value
         for x in self.source():
             current_value = reduce(current_value, x)
-        def reduced_data():
-            for x in current_value:
-                yield map(x)
-        return Data(reduced_data)
+        return current_value

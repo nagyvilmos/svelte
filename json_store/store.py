@@ -23,7 +23,7 @@ class Store:
     def _load_data(self, path:str):
         if not self.open:
             raise StoreException('Store is not open')
-        if (os.path.isfile(path)):
+        if (not os.path.isfile(path)):
             return None
 
         with open(path, 'r') as f:

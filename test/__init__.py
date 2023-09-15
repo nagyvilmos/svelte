@@ -24,8 +24,24 @@ for f in Path(__file__).parent.glob("*.py"):
 
 del import_module, Path
 
+# useful!
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+    @staticmethod
+    def highlight(text, style):
+        return style+text+bcolors.ENDC
+
 from ._test import test_funcs
-def run_tests(verbose, test_name):
+def run_tests(verbose, loud, test_list, file_list, pp):
     results = []
     total = {
         "tests":0,
@@ -33,18 +49,29 @@ def run_tests(verbose, test_name):
         "finished":0,
         "clean":0,
         "elapsed": 0,
+        "test_exception": 0,
+        "scaffold_exception": 0,
     }
     for test in test_funcs:
-        r=test(test_name)
+        r=test(test_list, file_list)
         if r is None:
             continue
-        if verbose:
-            print(r['test'],'-', 'passed' if r['passed'] else 'FAILED')
+        if loud and (not r['passed'] or not r['clean']) :
+            pp.pprint(r)
+        elif verbose:
+            if r['passed'] and r['clean']:
+                result = bcolors.highlight('passed', bcolors.OKGREEN)
+            elif r['passed']:
+                result = bcolors.highlight('passed/dirty', bcolors.WARNING)
+            else:
+                result = bcolors.highlight('FAILED', bcolors.FAIL)
+            print(r['test'],'-', result)
         results.append(r)
         total["tests"]+=1
-        for metric in ["passed","finished","clean"]:
-            if r[metric]:
+        for metric in ["passed","finished","clean","test_exception","scaffold_exception"]:
+            if r.get(metric) is not None and r[metric] != False:
                 total[metric]+=1
+
         total["elapsed"]+=r["elapsed"]
     total["results"]=results
     return total

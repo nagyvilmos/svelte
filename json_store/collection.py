@@ -16,12 +16,15 @@ class Collection:
         return Data(data)
 
     def get(self, where=None, id=None):
-
         return None
 
-    def _insert_into_collection(self, records):
-        col = self.store._data[self.name]
+    def _insert_into_collection(self, records, save=None):
+        col = self.store._data.get(self.name)
+        if (col is None):
+            col = []
+            self.store._data[self.name] = col
         ids = []
+
         for record in records:
             _id = record.get('_id')
             if _id is None:
@@ -30,16 +33,15 @@ class Collection:
             elif any(x['_id'] == _id for x in col):
                 raise KeyError
             ids.append(_id)
-        print(col)
+
         col.extend(records)
+        self.store.commit(self.name, save)
         return ids
 
-    def insert_one(self, record, save=True):
-        response = self._insert_into_collection([record])
-        self.store.commit(self.name, save)
+    def insert(self, record, save=None):
+        response = self._insert_into_collection([record], save)
         return response[0]
 
-    def insert_many(self, records, save=True):
-        ids = self._insert_into_collection(records)
-        self.store.commit(self.name, save)
-        return len(ids)
+    def insert_all(self, records, save=None, return_ids = True):
+        ids = self._insert_into_collection(records, save)
+        return ids if return_ids else len(ids)

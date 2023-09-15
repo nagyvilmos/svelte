@@ -12,19 +12,16 @@ def create_store():
     return get_store()
 
 def close_store(store):
-    store.close()
+    store.close(False)
     if os.path.isfile(store.path):
         os.remove(store.path)
+    return True
 
 @test('create a store', create_store, close_store)
-def test_create(store):
+def create(store):
     return store is not None and store.open
 
 @test('close store', create_store)
-def test_close(store):
+def close(store):
     store.close(False)
     return store is not None and not store.open
-
-@test('write and retrieve', create_store, close_store)
-def test_create(store):
-    store.put()
