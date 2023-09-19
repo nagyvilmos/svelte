@@ -15,10 +15,31 @@ class Collection:
                 yield x
         return Data(data)
 
-    def get(self, where=None, id=None):
-        return None
+    def get(self, id):
+        return self.data().find(lambda x : x['_id'] == id)
 
-    def _insert_into_collection(self, records, save=None):
+    def list(self):
+        return self.data().list()
+
+    def has_content(self):
+        return self.data().has_content()
+    
+    def find(self, filter):
+        return self.data().find()
+    
+    def filter(self, filter):
+        return self.data().filter(filter)
+    
+    def map(self, map):
+        return self.data().map(map)
+
+    def reduce(self, reduce, initial_value = None):
+        return self.data().list(reduce, initial_value)
+
+    def where(self, where):
+        return self.data().where(where)
+    
+    def _insert_into_collection(self, records, save, replace):
         col = self.store._data.get(self.name)
         if (col is None):
             col = []
@@ -31,6 +52,8 @@ class Collection:
                 _id = str(uuid.uuid4())
                 record['_id'] = _id
             elif any(x['_id'] == _id for x in col):
+                if not replace:
+                    raise KeyError
                 raise KeyError
             ids.append(_id)
 
@@ -38,10 +61,11 @@ class Collection:
         self.store.commit(self.name, save)
         return ids
 
-    def insert(self, record, save=None):
-        response = self._insert_into_collection([record], save)
+    def insert(self, record, save=None, replace=False):
+        response = self._insert_into_collection([record], save, replace)
         return response[0]
 
-    def insert_all(self, records, save=None, return_ids = True):
-        ids = self._insert_into_collection(records, save)
+    def insert_many(self, records, save=None, return_ids = True, replace=False):
+        ids = self._insert_into_collection(records, save, replace)
         return ids if return_ids else len(ids)
+

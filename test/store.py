@@ -17,11 +17,11 @@ def close_store(store):
         os.remove(store.path)
     return True
 
-@test('create a store', create_store, close_store)
+@test('create a store', True, create_store, close_store)
 def create(store):
     return store is not None and store.open
 
-@test('close store', create_store)
+@test('close store', True, create_store)
 def close(store):
     store.close(False)
     return store is not None and not store.open

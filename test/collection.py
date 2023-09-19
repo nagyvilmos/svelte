@@ -17,14 +17,26 @@ def clear_collection(collection):
         os.remove(collection.store.path)
     return True
 
-@test('insert single', create_collection, clear_collection)
+@test('insert single', True, create_collection, clear_collection)
 def insert_single(collection):
     result = collection.insert({'a': 1}, True)
     return result is not None
 
-@test('retrieve by id', create_collection, clear_collection)
+@test('retrieve by id', 1, create_collection, clear_collection)
 def retrieve_id(collection):
     result = collection.insert({'a': 1}, True)
     back = collection.get(id=result)
 
-    return back is not None and back['a'] == 1
+    return back.get('a') if back is not None else None
+
+TEST_COUNT = 100
+@test('insert many', TEST_COUNT, create_collection, clear_collection)
+def insert_many(collection):
+    data = [{'value' : x, 'even': x%2==0} for x in range(TEST_COUNT)]
+    return collection.insert_many(data, True, False)
+
+@test('retrieve by where', TEST_COUNT/2, create_collection, clear_collection)
+def retrieve_where(collection):
+    insert_many(collection)
+
+    return len(collection.data().where({"even": True}).list())

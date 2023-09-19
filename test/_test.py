@@ -6,7 +6,7 @@ log.setLevel(logging.DEBUG)
 
 test_funcs = []
 
-def test(description, setup=None, cleanup=None, included=True):
+def test(description, expected=True, setup=None, cleanup=None, included=True):
     log.debug(f"wrap {description}")
     def test_decorator(test):
         def wrapper(test_list, file_list):
@@ -28,6 +28,7 @@ def test(description, setup=None, cleanup=None, included=True):
             log.info('=====Test: ' + description)
             doc = {
                 'test': test_name,
+                'expected': expected,
                 'file': file_name,
                 'description':description,
                 'passed':False,
@@ -36,7 +37,9 @@ def test(description, setup=None, cleanup=None, included=True):
             try:
                 context=setup() if setup is not None else None
                 try:
-                    doc['passed']=test(context) if context is not None else test()
+                    result = test(context) if context is not None else test()
+                    doc['result']=result
+                    doc['passed']=result == expected
                     doc['finished']=True
                 except Exception as ex:
                     doc['test_exception'] = str(ex)

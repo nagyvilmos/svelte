@@ -52,18 +52,35 @@ def run_tests(verbose, loud, test_list, file_list, pp):
         "test_exception": 0,
         "scaffold_exception": 0,
     }
+
+    current_file = None
+    def check_file(previous, result):
+        current = result['file']
+        if previous == current:
+            return previous
+        print(bcolors.highlight(f"File: {current}.py", bcolors.HEADER+bcolors.UNDERLINE))
+        return current
+
     for test in test_funcs:
         r=test(test_list, file_list)
         if r is None:
             continue
+        
         if loud and (not r['passed'] or not r['clean']) :
+            current_file = check_file(current_file,r)
             pp.pprint(r)
-        elif verbose:
+
+        if verbose:
+            current_file = check_file(current_file,r)
+            if test_list is not None:
+                pp.pprint(r)
             if r['passed'] and r['clean']:
                 result = bcolors.highlight('passed', bcolors.OKGREEN)
             elif r['passed']:
                 result = bcolors.highlight('passed/dirty', bcolors.WARNING)
             else:
+                if r['finished'] == True:
+                    print(f'Expected {bcolors.highlight(str(r["expected"]), bcolors.OKBLUE)}, Result {bcolors.highlight(str(r["result"]), bcolors.OKBLUE)}')
                 result = bcolors.highlight('FAILED', bcolors.FAIL)
             print(r['test'],'-', result)
         results.append(r)
@@ -73,5 +90,7 @@ def run_tests(verbose, loud, test_list, file_list, pp):
                 total[metric]+=1
 
         total["elapsed"]+=r["elapsed"]
+    if current_file is not None:
+        print()
     total["results"]=results
     return total
