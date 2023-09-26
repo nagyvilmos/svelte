@@ -1,12 +1,13 @@
 from datetime import datetime
 import logging
+import traceback
 #logging.basicConfig(level=logging.WARNING)
 log = logging.getLogger('test')
 log.setLevel(logging.DEBUG)
 
 test_funcs = []
 
-def test(description, expected=True, setup=None, cleanup=None, included=True):
+def test(description, expected=True, setup=None, cleanup=None, included=True, iterator=None):
     log.debug(f"wrap {description}")
     def test_decorator(test):
         def wrapper(test_list, file_list):
@@ -26,33 +27,51 @@ def test(description, expected=True, setup=None, cleanup=None, included=True):
                 return None
 
             log.info('=====Test: ' + description)
-            doc = {
-                'test': test_name,
-                'expected': expected,
-                'file': file_name,
-                'description':description,
-                'passed':False,
-                'finished':False,
-                'started':datetime.now()}
-            try:
-                context=setup() if setup is not None else None
+            def run_test(expected_result, iteration):
+                doc = {
+                    'test': test_name,
+                    'expected': expected_result,
+                    'file': file_name,
+                    'description':description,
+                    'passed':False,
+                    'finished':False,
+                    'started':datetime.now()}
+                if iteration is not None:
+                    doc['iteration'] = iteration
                 try:
-                    result = test(context) if context is not None else test()
-                    doc['result']=result
-                    doc['passed']=result == expected
-                    doc['finished']=True
+                    context=None
+                    if setup is None:
+                        context=iteration
+                    elif iteration is None:
+                        context=setup()
+                    else:
+                        context=setup(iteration)
+
+                    try:
+                        result = test(context) if context is not None else test()
+                        doc['result']=result
+                        doc['passed']=result == expected_result
+                        doc['finished']=True
+                    except Exception as ex:
+                        doc['test_exception'] = ex
+                        doc['test_traceback'] = traceback.format_exc()
+                        doc['passed']=False
+                        doc['finished']=False
+
+                    clean=cleanup(context) if cleanup is not None else True
+                    doc['clean']=clean
                 except Exception as ex:
-                    doc['test_exception'] = str(ex)
-                    doc['passed']=False
-                    doc['finished']=False
-                clean=cleanup(context) if cleanup else True
-                doc['clean']=clean
-            except Exception as ex:
-                doc['scaffold_exception'] = str(ex)
-                doc['clean']=False
-            doc['completed'] = datetime.now()
-            doc['elapsed'] = (doc['completed'] - doc['started']).total_seconds()
-            return doc
+                    doc['scaffold_exception'] = ex
+                    doc['scaffold_traceback'] = traceback.format_exc()
+                    doc['clean']=False
+                doc['completed'] = datetime.now()
+                doc['elapsed'] = (doc['completed'] - doc['started']).total_seconds()
+                return doc
+            
+            if iterator is None:
+                return [run_test(expected, None)]
+            else:          
+                return [run_test(x[1], x[0]) for x in iterator()]
 
         # add the wrapper to the list of migrations
         # if it hasn't already been called, then it will

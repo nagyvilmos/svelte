@@ -15,7 +15,7 @@ class Data:
     
     def find(self, filter):
         for x in self.source():
-                if filter(x):
+                if is_match(x, filter):
                     return x
         return None
     
@@ -23,7 +23,7 @@ class Data:
         def filtered_data():
             found = False
             for x in self.source():
-                if filter(x):
+                if is_match(x, filter):
                     found = True
                     yield x
             if not found:
@@ -43,10 +43,70 @@ class Data:
         return current_value
 
     def sort(self, fields=None, function=None):
-        pass
-    
-    def where(self, where):
-        return self.filter(lambda x : is_match(x, where))
+        if fields is None == function is None:
+            raise ValueError("Must set one of fields or function")
+        if fields is not None:
+            # turn the fields into a function
+            
+            # do this once:
+            field_compares=[]
+            for field in fields:
+                reverse_result = field[0] == '-'
+                name = field[1:] if reverse_result else field
+                compare = -1 if reverse_result else 1
+                field_compares.append((name, compare))
+            print(field_compares)
+            def compare_by_fields(a,b):
+                for name,compare in field_compares:
+                    a_v = a.get(name)
+                    b_v = b.get(name)
+                    print(a_v, b_v)
+                    if a_v == b_v:
+                        return 0
+                    if a_v is None:
+                        return -compare
+                    if b_v is None:
+                        return compare
+                    if a_v > b_v:
+                        return compare
+                    return -compare
+                return 0
+            return self.sort(None, compare_by_fields)
+
+        items = self.list()
+
+        list_len = len(items)
+        order = list(range(list_len))
+
+
+        # double ended sort,
+        # moving it to start and finish means it is  O((n/2)^2) not O(n^2) 
+        def sorted_data():
+            swap_last = False
+            z = list_len-1
+            for x in range(list_len):
+                y = z
+
+                while y > x:
+                    if function(items[order[y]],items[order[x]]) < 0:
+                        temp=order[y]
+                        order[y]=order[x]
+                        order[x]=temp
+                        print(x, items[temp])
+                    if y < z and function(items[order[y]],items[order[z]]) > 0:
+                        temp=order[y]
+                        order[y]=order[z]
+                        order[z]=temp
+                        swap_last=True
+                        print(z, items[temp])
+                    y-=1
+                if not swap_last:
+                    z-=1
+                swap_last=False
+                yield items[order[x]]
+
+        print(sorted_data)
+        return Data(sorted_data)
 
 """See if a doc matches a filter
 match = {"field": {"compare", value}}
@@ -64,7 +124,6 @@ To check if a key is set with no value:
 def is_match(doc, filter):
     if filter is None:
         return True
-
     if callable(filter):
         return filter(doc)
         

@@ -22,7 +22,9 @@ def failed_test():
 def random_failure():
     value=random()
     sleep(value*2)
-    return value>.333
+    if value > .666:
+        raise NotImplementedError("Value too big - " + str(value))
+    return value>.166
 
 @test('Throw an exception',True, included=False)
 def exception():
@@ -57,3 +59,19 @@ def error_cleanup():
 @test('Passes expected foo_bar', 'foo_bar', included=False)
 def return_foo_bar():
     return 'foo_bar'
+
+def ten_times():
+    return [(x,x) for x in range(10)]
+@test('Run ten tests', included=False, iterator=ten_times)
+def multiple(x):
+    return x if x != 5 else 0
+
+def square(r):
+    return r*r
+def nothing(r):
+    return True
+def five_times():
+    return [(x+1, (x+1)*(x+1) ) for x in range(5)]
+@test('Five tests with setup and cleanup', included=False, setup=square, cleanup=nothing, iterator=five_times)
+def squares(x):
+    return x

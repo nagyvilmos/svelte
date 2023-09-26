@@ -513,7 +513,7 @@ def print_table(table):
     for t in sorted(table, key=lambda t: table[t].get_points(), reverse=True):
         print(table[t])
 
-if __name__ == "__main__":
+def run_league():
     random.seed(54371)
     table = load_games()
     print_table(table)
@@ -539,3 +539,24 @@ if __name__ == "__main__":
         for i in range(20):
             sum+=pos[i]*(i)
         print(f"{p}\t{pos}\t{sum/syms}")
+
+
+"""
+Calculate the integer square root of a number
+The only number yype t use is an integer,
+the pn;y operation you are allowed  is addition,
+and the only comparision is greater than.
+"""
+def int_root(x):
+    def root_calculation(root, square):
+        next_square = square + root + root + 1
+        if next_square > x:
+            return root
+        return root_calculation(root+1, next_square)
+    return root_calculation(1,1)
+
+if __name__ == "__main__":
+    #run_league()
+    for x in range(20):
+        r = random.randint(0, 10000)+1
+        print(r, int_root(r))

@@ -14,6 +14,8 @@ parser.add_argument("-l", "--loud", action="store_true",
                     help="return full result object rather than summary")
 parser.add_argument("-s", "--silent", action="store_true",
                     help="suppress output of function results")
+parser.add_argument("-e", "--exceptions", action="store_true",
+                    help="show exception details")
 args = parser.parse_args()
 
 pp = pprint.PrettyPrinter(indent=2,compact=False)
@@ -22,7 +24,7 @@ if args.verbose:
     pp.pprint(args)
 test_list = [x.strip() for x in args.test.split(',')] if args.test is not None else None
 test_files = [x.strip() for x in args.file.split(',')] if args.file is not None else None
-results = run_tests(args.verbose or not args.silent, args.loud and not args.silent, test_list, test_files, pp)
+results = run_tests(args.verbose or not args.silent, args.loud and not args.silent, args.exceptions, test_list, test_files, pp)
 
 if not args.verbose:
     del results["results"]

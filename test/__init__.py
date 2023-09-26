@@ -41,7 +41,7 @@ class bcolors:
         return style+text+bcolors.ENDC
 
 from ._test import test_funcs
-def run_tests(verbose, loud, test_list, file_list, pp):
+def run_tests(verbose, loud, exceptions, test_list, file_list, pp):
     results = []
     total = {
         "tests":0,
@@ -62,34 +62,46 @@ def run_tests(verbose, loud, test_list, file_list, pp):
         return current
 
     for test in test_funcs:
-        r=test(test_list, file_list)
-        if r is None:
+        test_results=test(test_list, file_list)
+        if test_results is None:
             continue
-        
-        if loud and (not r['passed'] or not r['clean']) :
-            current_file = check_file(current_file,r)
-            pp.pprint(r)
-
-        if verbose:
-            current_file = check_file(current_file,r)
-            if test_list is not None:
+        current_file=check_file(current_file,test_results[0])
+        for r in test_results:
+            if r.get('test_exception'):
+                ex = r.get('test_exception')
+                if exceptions:
+                    print(f"{type(ex).__name__} in test at line {ex.__traceback__.tb_lineno} of {__file__}: {ex}")
+                r['test_exception'] = str(ex)
+            
+            if r.get('scaffold_exception'):
+                ex = r.get('scaffold_exception')
+                if exceptions:
+                    print(f"{type(ex).__name__} in scaffold at line {ex.__traceback__.tb_lineno} of {__file__}: {ex}")
+                r['scaffold_exception'] = str(ex)
+                
+            if loud and (not r['passed'] or not r['clean']) :
                 pp.pprint(r)
-            if r['passed'] and r['clean']:
-                result = bcolors.highlight('passed', bcolors.OKGREEN)
-            elif r['passed']:
-                result = bcolors.highlight('passed/dirty', bcolors.WARNING)
-            else:
-                if r['finished'] == True:
-                    print(f'Expected {bcolors.highlight(str(r["expected"]), bcolors.OKBLUE)}, Result {bcolors.highlight(str(r["result"]), bcolors.OKBLUE)}')
-                result = bcolors.highlight('FAILED', bcolors.FAIL)
-            print(r['test'],'-', result)
-        results.append(r)
-        total["tests"]+=1
-        for metric in ["passed","finished","clean","test_exception","scaffold_exception"]:
-            if r.get(metric) is not None and r[metric] != False:
-                total[metric]+=1
 
-        total["elapsed"]+=r["elapsed"]
+            if verbose:
+                if test_list is not None:
+                    pp.pprint(r)
+                if r['passed'] and r['clean']:
+                    result = bcolors.highlight('passed', bcolors.OKGREEN)
+                elif r['passed']:
+                    result = bcolors.highlight('passed/dirty', bcolors.WARNING)
+                else:
+                    if r['finished'] == True:
+                        print(f'Expected {bcolors.highlight(str(r["expected"]), bcolors.OKBLUE)}, Result {bcolors.highlight(str(r["result"]), bcolors.OKBLUE)}')
+                    result = bcolors.highlight('FAILED', bcolors.FAIL)
+                name = r['test'] if r.get('iteration') is None else f"{r['test']} @ {r['iteration']}"
+                print(name,'-', result)
+            results.append(r)
+            total["tests"]+=1
+            for metric in ["passed","finished","clean","test_exception","scaffold_exception"]:
+                if r.get(metric) is not None and r[metric] != False:
+                    total[metric]+=1
+
+            total["elapsed"]+=r["elapsed"]
     if current_file is not None:
         print()
     total["results"]=results
