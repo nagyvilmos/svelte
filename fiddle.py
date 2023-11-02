@@ -540,11 +540,14 @@ def run_league():
             sum+=pos[i]*(i)
         print(f"{p}\t{pos}\t{sum/syms}")
 
+def create_salt(length=64):
+    import secrets
+    ''.join([secrets.choice('abcdefghijklmnopqrstuvwxyz1234567890') for _ in range(length)])  
 
 """
 Calculate the integer square root of a number
-The only number yype t use is an integer,
-the pn;y operation you are allowed  is addition,
+The only number type to use is an integer,
+the only operation you are allowed  is addition,
 and the only comparision is greater than.
 """
 def int_root(x):

@@ -1,6 +1,7 @@
 from ._test import test
 from json_store.data import Data
 from functools import reduce
+from random import shuffle
 
 def producer():
     def p():
@@ -38,7 +39,6 @@ def find_primes(data:Data):
         return found
     return data.reduce(find_prime, [])
 
-from random import shuffle
 def people():
     first_names = [
         'Ariel',
@@ -69,7 +69,7 @@ def people():
     # print(len(last_names), last_names)
  
     def p():
-        for x in range(10):
+        for x in range(100):
             first = x%10
             last = (x-first)//10
             value = {
@@ -81,18 +81,18 @@ def people():
 
     return Data(p)
 
-@test("How many people are called Atticus or Poindexter?", 19, people)
-def atticus_poindexter(data):
-    return len(data.filter({'$or': [{'first_name': 'Atticus' }, {'last_name': 'Poindexter' }]}).list())
+@test("How many people are called Liliana or Sweeney?", 19, people)
+def liliana_or_sweeney(data):
+    return len(data.filter({'$or': [{'first_name': 'Liliana' }, {'last_name': 'Sweeney' }]}).list())
 
-@test("How old is Atticus finch?", 32, people)
-def find_entry(data:Data):
-    found = data.find({'$and': [{'first_name': 'Atticus' }, {'last_name': 'Finch' }]})
+@test("How old is Liliana Sweeney?", 42, people)
+def liliana_sweeney_age(data:Data):
+    found = data.find({'$and': [{'first_name': 'Liliana' }, {'last_name': 'Sweeney' }]})
     return found['age']
 
 @test("Sorted by function", True, people)
 def sorted_function(data):
-    sorted=data.sort(function=lambda a,b : -2 if a['last_name'] < b['last_name'] \
+    sorted=data.sort(lambda a,b : -2 if a['last_name'] < b['last_name'] \
                       else 2 if a['last_name'] > b['last_name'] \
                        else -1 if a['first_name'] < b['first_name'] \
                         else 1 if a['first_name'] > b['first_name'] \
@@ -107,9 +107,18 @@ def sorted_function(data):
     
     return reduce(check,sorted.list(),{'first_name':'','last_name':''}) is not None
 
-@test("Sorted by fields", {'first_name':'','last_name':''}, people)
+@test("Sorted by fields", {'first_name': 'Atticus', 'last_name': 'Poindexter', 'age': 57}, people)
 def sorted_fields(data):
     sorted=data.sort(['-age', 'first_name']).list()
-    for x in sorted:
-        print(x)
     return sorted[0]
+
+@test("Compare sorts", True, people)
+def compare_sorts(data):
+    by_fields=data.sort(['last_name', 'first_name']).list()
+    by_function=data.sort(lambda a,b : -2 if a['last_name'] < b['last_name'] \
+                      else 2 if a['last_name'] > b['last_name'] \
+                       else -1 if a['first_name'] < b['first_name'] \
+                        else 1 if a['first_name'] > b['first_name'] \
+                         else 0).list()
+    return by_fields==by_function
+

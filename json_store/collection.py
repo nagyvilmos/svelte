@@ -1,5 +1,4 @@
-from decimal import InvalidContext
-import json, uuid, os.path
+import uuid
 from .data import Data
 
 class Collection:
@@ -36,8 +35,11 @@ class Collection:
     def reduce(self, reduce, initial_value = None):
         return self.data().list(reduce, initial_value)
 
-    def where(self, where):
-        return self.data().where(where)
+    def filter(self, where):
+        return self.data().filter(where)
+
+    def find(self, where):
+        return self.data().find(where)
     
     def _insert_into_collection(self, records, save, replace):
         col = self.store._data.get(self.name)

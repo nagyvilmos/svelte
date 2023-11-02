@@ -13,9 +13,9 @@ def login():
     password = request.args.get("password")
     if name is None or password is None:
         return json.jsonify({}), 401
-    #[isOkay, rep] = model.users.validate_login(name, password)
+    # [isOkay, rep] = model.users.validate_login(name, password)
     isOkay = True
-    rep = {"user": name, "authorised": True}
+    rep = {"user": name, "authorised": True, 'x': 3}
     if not isOkay:
         return json.jsonify({}), 401
     return json.jsonify(rep)

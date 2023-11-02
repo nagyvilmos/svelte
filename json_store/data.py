@@ -1,3 +1,9 @@
+"""
+Data class for json_store
+
+The data is, in general, accesssed via an iterator
+
+"""
 class Data:
     def __init__(self, source):
         self.source = source
@@ -42,27 +48,32 @@ class Data:
             current_value = reduce(current_value, x)
         return current_value
 
-    def sort(self, fields=None, function=None):
-        if fields is None == function is None:
-            raise ValueError("Must set one of fields or function")
-        if fields is not None:
+    """
+    Sort the data based on the supplied comparison
+    
+    The comparison may be a function that takes two json objects and returns a numeric value; negative for first, positive for second and zero for equal 
+    Alternatively it can be json array of field names; field names may be prefixed with '-' to indicate descending order.
+
+    Returns a sorted data object.
+    """
+    def sort(self, comparison):
+        if comparison is None:
+            raise ValueError("Must provide a sort order")
+        if not callable(comparison):
             # turn the fields into a function
-            
             # do this once:
             field_compares=[]
-            for field in fields:
+            for field in comparison:
                 reverse_result = field[0] == '-'
                 name = field[1:] if reverse_result else field
                 compare = -1 if reverse_result else 1
                 field_compares.append((name, compare))
-            print(field_compares)
             def compare_by_fields(a,b):
                 for name,compare in field_compares:
                     a_v = a.get(name)
                     b_v = b.get(name)
-                    print(a_v, b_v)
                     if a_v == b_v:
-                        return 0
+                        continue
                     if a_v is None:
                         return -compare
                     if b_v is None:
@@ -71,41 +82,37 @@ class Data:
                         return compare
                     return -compare
                 return 0
-            return self.sort(None, compare_by_fields)
+            return self.sort(compare_by_fields)
 
         items = self.list()
 
         list_len = len(items)
-        order = list(range(list_len))
+        order=list(range(list_len))
 
+        gap=list_len
+        sorted=False
 
-        # double ended sort,
-        # moving it to start and finish means it is  O((n/2)^2) not O(n^2) 
+        while not sorted:
+            gap=int(gap/1.3)
+            if gap <= 1:
+                gap=1
+                sorted=True #If there are no swaps this pass, we are done
+            x = 0
+            while x+gap < list_len:
+                y = x+gap
+                if comparison(items[order[y]],items[order[x]]) < 0:
+                    temp=order[x]
+                    order[x]=order[y]
+                    order[y]=temp
+                    sorted=False
+                    # If this assignment never happens within the loop,
+                    # then there have been no swaps and the list is sorted.
+                x+=1
+
         def sorted_data():
-            swap_last = False
-            z = list_len-1
-            for x in range(list_len):
-                y = z
+            for x in order:
+                yield items[x]
 
-                while y > x:
-                    if function(items[order[y]],items[order[x]]) < 0:
-                        temp=order[y]
-                        order[y]=order[x]
-                        order[x]=temp
-                        print(x, items[temp])
-                    if y < z and function(items[order[y]],items[order[z]]) > 0:
-                        temp=order[y]
-                        order[y]=order[z]
-                        order[z]=temp
-                        swap_last=True
-                        print(z, items[temp])
-                    y-=1
-                if not swap_last:
-                    z-=1
-                swap_last=False
-                yield items[order[x]]
-
-        print(sorted_data)
         return Data(sorted_data)
 
 """See if a doc matches a filter
@@ -128,7 +135,7 @@ def is_match(doc, filter):
         return filter(doc)
         
     #print(doc, filter)
-
+    
     for key in filter.keys():
         value = filter[key] 
         compare = {

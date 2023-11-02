@@ -29,7 +29,7 @@ def retrieve_id(collection):
 
     return back.get('a') if back is not None else None
 
-TEST_COUNT = 100
+TEST_COUNT = 10000
 @test('insert many', TEST_COUNT, create_collection, clear_collection)
 def insert_many(collection):
     data = [{'value' : x, 'even': x%2==0} for x in range(TEST_COUNT)]
@@ -39,4 +39,4 @@ def insert_many(collection):
 def retrieve_where(collection):
     insert_many(collection)
 
-    return len(collection.data().where({"even": True}).list())
+    return len(collection.data().filter({"even": True}).list())

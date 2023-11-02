@@ -62,6 +62,7 @@ def return_foo_bar():
 
 def ten_times():
     return [(x,x) for x in range(10)]
+
 @test('Run ten tests', included=False, iterator=ten_times)
 def multiple(x):
     return x if x != 5 else 0

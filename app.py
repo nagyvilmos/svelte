@@ -21,20 +21,20 @@ app = Flask(__name__)
 Main routes path.
 All routing is client side, and so we just serve up the app.
 """
-@app.route("/")
-@app.route("/<path:path>")
+@app.get("/")
+@app.get("/<path:path>")
 def home(path = None):
     return send_from_directory('client/public', 'index.html')
 
 """
 Path for all the static files (compiled JS/CSS, etc.)
 """
-@app.route("/resource/<path:path>")
+@app.get("/resource/<path:path>")
 def content(path):
     return send_from_directory('client/public', path)
 
 #Load in the controllers from the API:
 init_api(app)
-        
+    
 if __name__ == "__main__":
-    app.run(debug=True, port=62537)
+    app.run(debug=True, port=62537, )

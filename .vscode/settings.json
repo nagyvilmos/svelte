@@ -1,11 +1,12 @@
 {
-    "python.analysis.extraPaths": [
-        "./Lib/site-packages"
-    ],
-    "workbench.colorCustomizations": {
-        "activityBar.background": "#3150d9",
-        "titleBar.activeBackground": "#3150d9",
-        "titleBar.activeForeground": "#FEFBFB"
-      },
-    
+  "python.analysis.extraPaths": ["./Lib/site-packages"],
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#3150d9",
+    "titleBar.activeBackground": "#3150d9",
+    "titleBar.activeForeground": "#FEFBFB"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8"
+  },
+  "python.formatting.provider": "none"
 }

@@ -1,17 +1,18 @@
 from flask import Blueprint, json, request
 from server.model import get_model
+from json_store.data import Data
 import logging;
 
 log = logging.getLogger('todo')
 log.setLevel(logging.DEBUG)
 
-dummy_list = [
+dummy_list = Data([
     {'_id': '1', 'user': 'william', 'due': '20230605', 'description': 'blah blah', 'complete': False},
     {'_id': '2', 'user': 'steve', 'due': '20230601', 'description': 'blah', 'complete': True},
     {'_id': '3', 'user': 'alex', 'due': '20230615', 'description': 'blah blah blah', 'complete': False},
     {'_id': '4', 'user': 'william', 'due': '20230612', 'description': 'blah blah blah blah blah', 'complete': True},
     {'_id': '5', 'user': 'steve', 'due': '20230607', 'description': 'blah blah blah blah', 'complete': False},
-]
+])
 model = None
 todo = Blueprint('todo', __name__, url_prefix="/todo")
 
@@ -48,7 +49,7 @@ def build_filter():
 @todo.route("/", methods=["GET"])
 def get_list():
     filter = build_filter()
-    return json.jsonify(dummy_list if filter is None else [row for row in dummy_list if filter(row)])
+    return json.jsonify(dummy_list.list() if filter is None else dummy_list.filter(filter).list())
 
 @todo.route("/<id>", methods=["GET"])
 def get_by_id(id):
