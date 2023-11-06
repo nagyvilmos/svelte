@@ -92,7 +92,10 @@ def run_tests(verbose, loud, exceptions, test_list, file_list, pp):
                 else:
                     if r['finished'] == True:
                         print(f'Expected {bcolors.highlight(str(r["expected"]), bcolors.OKBLUE)}, Result {bcolors.highlight(str(r["result"]), bcolors.OKBLUE)}')
-                    result = bcolors.highlight('FAILED', bcolors.FAIL)
+                    exception = r.get('test_exception')
+                    if exception is None:
+                        exception = r.get('scaffold_exception')
+                    result = bcolors.highlight('FAILED' if exception is None else exception, bcolors.FAIL)
                 name = r['test'] if r.get('iteration') is None else f"{r['test']} @ {r['iteration']}"
                 print(name,'-', result)
             results.append(r)

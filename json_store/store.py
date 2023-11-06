@@ -1,5 +1,4 @@
 import json
-import uuid
 import os.path
 from .collection import Collection
 
@@ -28,7 +27,6 @@ class Store:
         if not self.open:
             raise StoreException('Store is not open')
         if (not os.path.isfile(path)):
-            print ("BAD PATH " + path)
             return None
 
         with open(path, 'r') as f:

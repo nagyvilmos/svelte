@@ -9,7 +9,7 @@ def store_name(folder):
 
 def create_store(folder) -> Store:
     path = store_name(folder)
-    print(path)
+    #print(path)
     init_store(path,folder)
     return get_store()
 
@@ -40,7 +40,7 @@ def close_store(store):
 def write_and_read_back(store:Store):
     test = store.get('test')
     test.insert({'x':1})
-    store.update('test',True)
+    store.commit('test',True)
     retrieve = store.get('test').find(lambda s: s['x'] == 1)
     print(test.list(), retrieve)
     return retrieve['x'] == 1
