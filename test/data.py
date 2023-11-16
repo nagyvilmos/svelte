@@ -10,23 +10,23 @@ def producer():
 
     return Data(p)
 
-@test("has content", True, producer)
+@test(True, producer)
 def has_content(data:Data):
     return data.has_content()
 
-@test("list contains all items", 10,producer)
+@test(10,producer)
 def list(data:Data):
     return len(data.list()) 
 
-@test("filter list", 3, producer)
+@test(3, producer)
 def filter(data:Data):
     return len(data.filter(lambda x : x%3 == 0).list()) 
 
-@test("reduce list", 55, producer)
+@test(55, producer)
 def reduce_list(data:Data):
     return data.reduce(lambda total,x: total+x, 0)
 
-@test("find prime numbers", [2, 3, 5, 7], producer)
+@test([2, 3, 5, 7], producer)
 def find_primes(data:Data):
     def find_prime(found, x):
         if x > 1:
@@ -81,16 +81,16 @@ def people():
 
     return Data(p)
 
-@test("How many people are called Liliana or Sweeney?", 19, people)
+@test(19, people)
 def liliana_or_sweeney(data):
     return len(data.filter({'$or': [{'first_name': 'Liliana' }, {'last_name': 'Sweeney' }]}).list())
 
-@test("How old is Liliana Sweeney?", 42, people)
+@test(42, people)
 def liliana_sweeney_age(data:Data):
     found = data.find({'$and': [{'first_name': 'Liliana' }, {'last_name': 'Sweeney' }]})
     return found['age']
 
-@test("Sorted by function", True, people)
+@test(True, people)
 def sorted_function(data):
     sorted=data.sort(lambda a,b : -2 if a['last_name'] < b['last_name'] \
                       else 2 if a['last_name'] > b['last_name'] \
@@ -107,12 +107,12 @@ def sorted_function(data):
     
     return reduce(check,sorted.list(),{'first_name':'','last_name':''}) is not None
 
-@test("Sorted by fields", {'first_name': 'Atticus', 'last_name': 'Poindexter', 'age': 57}, people)
+@test({'first_name': 'Atticus', 'last_name': 'Poindexter', 'age': 57}, people)
 def sorted_fields(data):
     sorted=data.sort(['-age', 'first_name']).list()
     return sorted[0]
 
-@test("Compare sorts", True, people)
+@test(True, people)
 def compare_sorts(data):
     by_fields=data.sort(['last_name', 'first_name']).list()
     by_function=data.sort(lambda a,b : -2 if a['last_name'] < b['last_name'] \

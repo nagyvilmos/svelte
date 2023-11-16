@@ -1,14 +1,4 @@
-''' This is a folder for migration
-
-Add each migration as a file like: yyy-mm-dd-HHmm-name.py
-they get ordered when they're run:
-
-the script is like:
-from ._test import test
-
-@test('dd-mm-hh-mm-HHMM', 'name')
-def name(store):
-    # do stuff
+''' This is a folder for testing stuff
 
 All files NOT prefixed with _ will be imported and thus added for migration.
 '''

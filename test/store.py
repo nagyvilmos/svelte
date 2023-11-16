@@ -8,9 +8,10 @@ def store_name(folder):
     return name if folder else f"{name}.json"
 
 def create_store(folder) -> Store:
-    path = store_name(folder)
+    is_folder = folder=="folder"
+    path = store_name(is_folder)
     #print(path)
-    init_store(path,folder)
+    init_store(path,is_folder)
     return get_store()
 
 def close_store(store):
@@ -18,29 +19,37 @@ def close_store(store):
     if store.folder:
         if os.path.isdir(store.path):
             for file in os.listdir(store.path):
-                os.remove(file)
+                os.remove(f'{store.path}/{file}')
             os.rmdir(store.path)
     elif os.path.isfile(store.path):
         os.remove(store.path)
     return True
 
 def store_type():
-    return [(x == 1, True) for x in range(2)]
+    return [("folder" if x == 1 else "file", True) for x in range(2)]
 
-@test('create a store', setup=create_store, cleanup=close_store, iterator=store_type)
+@test( setup=create_store, cleanup=close_store, iterator=store_type)
 def create(store):
     return store is not None and store.open
 
-@test('close store', None, setup=create_store, iterator=store_type)
-def close_store(store):
+@test( None, setup=create_store, iterator=store_type)
+def close_store_test(store):
     store.close(False)
     return store is not None and not store.open
 
-@test('write and read back', setup=create_store, cleanup=close_store, iterator=store_type)
+@test(1, setup=create_store, cleanup=close_store, iterator=store_type)
 def write_and_read_back(store:Store):
     test = store.get('test')
     test.insert({'x':1})
     store.commit('test',True)
     retrieve = store.get('test').find(lambda s: s['x'] == 1)
-    print(test.list(), retrieve)
-    return retrieve['x'] == 1
+    return retrieve['x']
+
+@test(55, create_store, close_store, True, store_type)
+def write_many_and_read_back(store:Store):
+    test = store.get('test')
+    for x in range(1000):
+        test.insert({'x':x})
+    store.commit('test',True)
+    retrieve = store.get('test').find(lambda s: s['x'] == 55)
+    return retrieve['x']

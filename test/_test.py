@@ -7,8 +7,7 @@ log.setLevel(logging.DEBUG)
 
 test_funcs = []
 
-def test(description, expected=True, setup=None, cleanup=None, included=True, iterator=None):
-    log.debug(f"wrap {description}")
+def test(expected:any=True, setup=None, cleanup=None, included=True, iterator=None):
     def test_decorator(test):
         def wrapper(test_list, file_list):
             
@@ -25,7 +24,7 @@ def test(description, expected=True, setup=None, cleanup=None, included=True, it
             if not included and test_list is None and file_list is None:
                 # test requires explicit include
                 return None
-
+            description = test.__name__
             log.info('=====Test: ' + description)
             def run_test(expected_result, iteration):
                 doc = {

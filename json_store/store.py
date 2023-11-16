@@ -1,5 +1,5 @@
 import json
-import os.path
+import os
 from .collection import Collection
 
 
@@ -73,6 +73,8 @@ class Store:
             return
 
         if self.folder:
+            if (not os.path.isdir(self.path)):
+                os.mkdir(self.path)
             for col in self._changed:
                 p = f"{self.path}/{col}.json"
                 self._save_data(p, self._data.get(col, []))

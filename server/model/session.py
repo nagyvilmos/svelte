@@ -37,7 +37,7 @@ def get_session(req):
         return None
 
     digest = _generate_digest(token + name)
-    return Session().load({'digest': req['digest']})
+    return Session().load({'digest': digest})
 
 
 class Session(Entity):
